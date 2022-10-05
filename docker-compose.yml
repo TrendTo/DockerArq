@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: app.dockerfile
+    container_name: back
+    ports:
+      - 8080:80
+    volumes:
+      - ./www:/var/www/html/
+    depends_on:
+      - db
+    networks:
+      app_network:
+        aliases:
+          - back
+
+  db:
+    build: 
+      context: .
+      dockerfile: db.dockerfile
+    container_name: db
+    environment:
+      MYSQL_DATABASE: "info"
+      MYSQL_ROOT_PASSWORD: "admin"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql:/var/lib/mysql/
+    networks:
+      app_network:
+        aliases:
+          - db
+
+volumes:
+  www: {}
+  mysql: {}
+
+networks:
+  app_network:
+    name: net_project
+    driver: bridge
+    ipam:
+      driver: default
